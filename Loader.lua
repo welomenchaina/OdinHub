@@ -421,13 +421,13 @@ GetKeyButton.MouseButton1Click:Connect(function()
     TweenService:Create(GetKeyButton, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 215, 0)}):Play()
     
     if setclipboard then
-        setclipboard("https://ads.luarmor.net/get_key?for=Odin_Hub-sHpmdyoLEflr")
+        setclipboard("https://discord.gg/nY3xS8tDUQ")
         StatusLabel.Text = "Key link copied to clipboard!"
     end
     
     if request then
         request({
-            Url = "https://ads.luarmor.net/get_key?for=Odin_Hub-sHpmdyoLEflr",
+            Url = "https://discord.gg/nY3xS8tDUQ",
             Method = "GET"
         })
     end
