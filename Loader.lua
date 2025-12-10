@@ -482,6 +482,7 @@ CheckKeyButton.MouseButton1Click:Connect(function()
     wait(0.5)
     
     script_key = enteredKey;
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/welomenchaina/OdinHub/refs/heads/main/LuarmorLoader.lua",true))()
     
     wait(0.5)
     TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 0)}):Play()
