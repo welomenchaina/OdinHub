@@ -18,6 +18,7 @@ end
 
 if game.GameId == 184199275 then
   loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/a3f402ada01f234399ea335aae31f420.lua"))()
+  validgame = true
 end
 
 if not validgame then
