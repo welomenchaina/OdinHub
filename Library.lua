@@ -1,3 +1,7 @@
+if not game:IsLoaded() then
+	repeat task.wait() until game:IsLoaded()
+end
+
 local OdinLib = {}
 OdinLib.__index = OdinLib
 
