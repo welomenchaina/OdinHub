@@ -337,6 +337,7 @@ function OdinLib.new(cfg)
 	s:SetupMobile()
 	s:CreateSettingsTab()
 	s:LoadConfig()
+	task.wait()
 	if #s.Tabs > 0 and not s.CurrentTab then s:SelectTab(s.Tabs[1]) end
 	return s
 end
@@ -368,7 +369,7 @@ function OdinLib:CreateSidebar()
 	local sf = Create("Frame", {Name = "SearchFrame", Size = UDim2.new(1, -20, 0, 32), Position = UDim2.new(0, 10, 0, 10), BackgroundColor3 = self.Theme.Content, BorderSizePixel = 0, Parent = self.Sidebar})
 	Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = sf})
 	self.SearchBox = Create("TextBox", {Name = "SearchBox", Size = UDim2.new(1, -30, 1, 0), Position = UDim2.new(0, 28, 0, 0), BackgroundTransparency = 1, PlaceholderText = "Search tabs", PlaceholderColor3 = self.Theme.TextDisabled, Text = "", TextColor3 = self.Theme.TextPrimary, TextSize = 11, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = sf})
-	Create("ImageLabel", {Name = "SearchIcon", Size = UDim2.new(0, 14, 0, 14), Position = UDim2.new(0, 8, 0.5, -7), BackgroundTransparency = 1, Image = GetIcon("search"), ImageColor3 = self.Theme.TextSecondary, Parent = sf})
+	Create("ImageLabel", {Name = "SearchIcon", Size = UDim2.new(0, 14, 0, 14), Position = UDim2.new(0, 8, 0.5, -7), BackgroundTransparency = 1, Image = "rbxassetid://7072721559", ImageColor3 = self.Theme.TextSecondary, Parent = sf})
 	self.TabContainer = Create("ScrollingFrame", {Name = "TabContainer", Size = UDim2.new(1, -10, 1, -52), Position = UDim2.new(0, 5, 0, 47), BackgroundTransparency = 1, BorderSizePixel = 0, ScrollBarThickness = 3, ScrollBarImageColor3 = self.Theme.Primary, CanvasSize = UDim2.new(0, 0, 0, 0), Parent = self.Sidebar})
 	local tl = Create("UIListLayout", {SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4), Parent = self.TabContainer})
 	tl:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() self.TabContainer.CanvasSize = UDim2.new(0, 0, 0, tl.AbsoluteContentSize.Y + 8) end)
@@ -469,7 +470,63 @@ function OdinLib:UpdateAnonymousMode()
 end
 
 function OdinLib:CreateSettingsTab()
-	return
+	local st = self:AddTab({Name = "UI Settings", Icon = "settings", Subtext = "Configure interface"})
+	self:AddDivider(st, {Text = "KEYBIND"})
+	self:AddLabel(st, {Text = "Change the toggle key for the UI"})
+	local kb = Create("Frame", {Name = "KeybindFrame", Size = UDim2.new(1, 0, 0, 40), BackgroundColor3 = self.Theme.ElementBackground, BorderSizePixel = 0, Parent = self.ContentScroll, Visible = false})
+	Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = kb})
+	Create("TextLabel", {Size = UDim2.new(0.5, 0, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = "Toggle Key", TextColor3 = self.Theme.TextPrimary, TextSize = 12, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = kb})
+	local kbb = Create("TextButton", {Size = UDim2.new(0.45, 0, 0, 28), Position = UDim2.new(0.55, 0, 0.5, -14), BackgroundColor3 = self.Theme.Border, BorderSizePixel = 0, Text = self.Keybind.Name, TextColor3 = self.Theme.Primary, TextSize = 11, Font = Enum.Font.GothamBold, Parent = kb})
+	Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = kbb})
+	table.insert(st.Elements, {Type = "Custom", Frame = kb})
+	kbb.MouseButton1Click:Connect(function()
+		kbb.Text = "..."
+		local cn; cn = game:GetService("UserInputService").InputBegan:Connect(function(i)
+			if i.UserInputType == Enum.UserInputType.Keyboard then
+				self.Keybind = i.KeyCode
+				kbb.Text = i.KeyCode.Name
+				self.KeybindButton.Text = i.KeyCode.Name
+				cn:Disconnect()
+			end
+		end)
+	end)
+	self:AddDivider(st, {Text = "LOADOUT MANAGER"})
+	self:AddLabel(st, {Text = "Save and load UI configurations"})
+	local lf = Create("Frame", {Name = "LoadoutFrame", Size = UDim2.new(1, 0, 0, 72), BackgroundColor3 = self.Theme.ElementBackground, BorderSizePixel = 0, Parent = self.ContentScroll, Visible = false})
+	Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = lf})
+	Create("TextLabel", {Size = UDim2.new(1, -20, 0, 16), Position = UDim2.new(0, 10, 0, 6), BackgroundTransparency = 1, Text = "Loadout Name", TextColor3 = self.Theme.TextSecondary, TextSize = 10, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = lf})
+	local lin = Create("TextBox", {Size = UDim2.new(1, -20, 0, 26), Position = UDim2.new(0, 10, 0, 24), BackgroundColor3 = self.Theme.Border, BorderSizePixel = 0, Text = self.LoadoutName, PlaceholderText = "Enter name", PlaceholderColor3 = self.Theme.TextDisabled, TextColor3 = self.Theme.TextPrimary, TextSize = 11, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = lf})
+	Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = lin})
+	Create("UIPadding", {PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8), Parent = lin})
+	local sav = Create("TextButton", {Size = UDim2.new(0.48, 0, 0, 20), Position = UDim2.new(0, 10, 1, -26), BackgroundColor3 = self.Theme.Success, BorderSizePixel = 0, Text = "Save Config", TextColor3 = self.Theme.Background, TextSize = 10, Font = Enum.Font.GothamBold, Parent = lf})
+	Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = sav})
+	local lod = Create("TextButton", {Size = UDim2.new(0.48, 0, 0, 20), Position = UDim2.new(0.52, 0, 1, -26), BackgroundColor3 = self.Theme.Primary, BorderSizePixel = 0, Text = "Load Config", TextColor3 = self.Theme.Background, TextSize = 10, Font = Enum.Font.GothamBold, Parent = lf})
+	Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = lod})
+	table.insert(st.Elements, {Type = "Custom", Frame = lf})
+	sav.MouseButton1Click:Connect(function()
+		local n = lin.Text
+		if n and n ~= "" then
+			self.LoadoutName = n
+			self.LoadoutInput.Text = n
+			self:SaveConfig()
+			self:Log("Saved: " .. n, "success")
+		end
+	end)
+	lod.MouseButton1Click:Connect(function()
+		local n = lin.Text
+		if n and n ~= "" then
+			self.LoadoutName = n
+			self.LoadoutInput.Text = n
+			self:LoadConfig()
+			self:Log("Loaded: " .. n, "success")
+		end
+	end)
+	self:AddDivider(st, {Text = "PRIVACY"})
+	self:AddToggle(st, {Name = "Anonymous Mode", Default = false, Callback = function(v)
+		self.AnonymousMode = v
+		self:UpdateAnonymousMode()
+		self:Log(v and "Anonymous mode enabled" or "Anonymous mode disabled", "success")
+	end})
 end
 
 function OdinLib:ToggleVisibility()
