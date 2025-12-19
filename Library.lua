@@ -378,7 +378,73 @@ end
 
 function OdinLib:CreateUserPanel()
 	local up = Create("Frame", {Name = "UserPanel", Size = UDim2.new(0, 200, 0, 95), Position = UDim2.new(0, 0, 1, -95), BackgroundColor3 = self.Theme.Sidebar, BorderSizePixel = 0, Parent = self.MainFrame})
-	local ui = Create("Frame", {Name = "UserInfo", Size = UDim2.new(1, -20, 1, -10), Position = UDim2.new(0, 10, 0, 5), BackgroundColor3 = self.Theme.Content, BorderSizePixel = 0, Parent = up})
+	local sc = Create("Frame", {Name = "SettingsContainer", Size = UDim2.new(1, -20, 0, 28), Position = UDim2.new(0, 10, 0, 8), BackgroundTransparency = 1, ClipsDescendants = true, Parent = up})
+	local sb = Create("TextButton", {Name = "SettingsButton", Size = UDim2.new(1, 0, 0, 28), Position = UDim2.new(0, 0, 0, 0), BackgroundColor3 = self.Theme.Content, BorderSizePixel = 0, Text = "", Parent = sc})
+	Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = sb})
+	Create("ImageLabel", {Size = UDim2.new(0, 16, 0, 16), Position = UDim2.new(0, 8, 0.5, -8), BackgroundTransparency = 1, Image = GetIcon("settings"), ImageColor3 = self.Theme.TextSecondary, Parent = sb})
+	Create("TextLabel", {Size = UDim2.new(1, -32, 1, 0), Position = UDim2.new(0, 28, 0, 0), BackgroundTransparency = 1, Text = "Settings", TextColor3 = self.Theme.TextSecondary, TextSize = 11, Font = Enum.Font.GothamMedium, TextXAlignment = Enum.TextXAlignment.Left, Parent = sb})
+	local ar = Create("ImageLabel", {Size = UDim2.new(0, 10, 0, 10), Position = UDim2.new(1, -18, 0.5, -5), BackgroundTransparency = 1, Image = GetIcon("chevron-down"), ImageColor3 = self.Theme.TextSecondary, Rotation = 0, Parent = sb})
+	local kf = Create("Frame", {Name = "KeybindFrame", Size = UDim2.new(1, 0, 0, 32), Position = UDim2.new(0, 0, 0, 32), BackgroundColor3 = self.Theme.ElementBackground, BorderSizePixel = 0, Parent = sc})
+	Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = kf})
+	Create("TextLabel", {Size = UDim2.new(0.5, -4, 1, 0), Position = UDim2.new(0, 8, 0, 0), BackgroundTransparency = 1, Text = "Toggle Key", TextColor3 = self.Theme.TextSecondary, TextSize = 10, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = kf})
+	self.KeybindButton = Create("TextButton", {Size = UDim2.new(0.5, -8, 0, 24), Position = UDim2.new(0.5, 4, 0.5, -12), BackgroundColor3 = self.Theme.Border, BorderSizePixel = 0, Text = self.Keybind.Name, TextColor3 = self.Theme.Primary, TextSize = 10, Font = Enum.Font.GothamBold, Parent = kf})
+	Create("UICorner", {CornerRadius = UDim.new(0, 3), Parent = self.KeybindButton})
+	self.KeybindButton.MouseButton1Click:Connect(function()
+		self.KeybindButton.Text = "..."
+		local cn; cn = game:GetService("UserInputService").InputBegan:Connect(function(i)
+			if i.UserInputType == Enum.UserInputType.Keyboard then
+				self.Keybind = i.KeyCode
+				self.KeybindButton.Text = i.KeyCode.Name
+				cn:Disconnect()
+			end
+		end)
+	end)
+	local lf = Create("Frame", {Name = "LoadoutFrame", Size = UDim2.new(1, 0, 0, 64), Position = UDim2.new(0, 0, 0, 68), BackgroundColor3 = self.Theme.ElementBackground, BorderSizePixel = 0, Parent = sc})
+	Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = lf})
+	Create("TextLabel", {Size = UDim2.new(1, -16, 0, 14), Position = UDim2.new(0, 8, 0, 4), BackgroundTransparency = 1, Text = "Loadout Manager", TextColor3 = self.Theme.TextSecondary, TextSize = 10, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = lf})
+	self.LoadoutInput = Create("TextBox", {Size = UDim2.new(1, -16, 0, 20), Position = UDim2.new(0, 8, 0, 20), BackgroundColor3 = self.Theme.Border, BorderSizePixel = 0, Text = self.LoadoutName, PlaceholderText = "Loadout name", PlaceholderColor3 = self.Theme.TextDisabled, TextColor3 = self.Theme.TextPrimary, TextSize = 9, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = lf})
+	Create("UICorner", {CornerRadius = UDim.new(0, 3), Parent = self.LoadoutInput})
+	Create("UIPadding", {PaddingLeft = UDim.new(0, 6), PaddingRight = UDim.new(0, 6), Parent = self.LoadoutInput})
+	local sav = Create("TextButton", {Size = UDim2.new(0.48, 0, 0, 18), Position = UDim2.new(0, 8, 1, -22), BackgroundColor3 = self.Theme.Success, BorderSizePixel = 0, Text = "Save", TextColor3 = self.Theme.Background, TextSize = 9, Font = Enum.Font.GothamBold, Parent = lf})
+	Create("UICorner", {CornerRadius = UDim.new(0, 3), Parent = sav})
+	local lod = Create("TextButton", {Size = UDim2.new(0.48, 0, 0, 18), Position = UDim2.new(0.52, 0, 1, -22), BackgroundColor3 = self.Theme.Primary, BorderSizePixel = 0, Text = "Load", TextColor3 = self.Theme.Background, TextSize = 9, Font = Enum.Font.GothamBold, Parent = lf})
+	Create("UICorner", {CornerRadius = UDim.new(0, 3), Parent = lod})
+	sav.MouseButton1Click:Connect(function()
+		local n = self.LoadoutInput.Text
+		if n and n ~= "" then
+			self.LoadoutName = n
+			self:SaveConfig()
+			self:Log("Saved: " .. n, "success")
+		end
+	end)
+	lod.MouseButton1Click:Connect(function()
+		local n = self.LoadoutInput.Text
+		if n and n ~= "" then
+			self.LoadoutName = n
+			self:LoadConfig()
+			self:Log("Loaded: " .. n, "success")
+		end
+	end)
+	local anf = Create("Frame", {Name = "AnonFrame", Size = UDim2.new(1, 0, 0, 32), Position = UDim2.new(0, 0, 0, 136), BackgroundColor3 = self.Theme.ElementBackground, BorderSizePixel = 0, Parent = sc})
+	Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = anf})
+	Create("TextLabel", {Size = UDim2.new(0.65, 0, 1, 0), Position = UDim2.new(0, 8, 0, 0), BackgroundTransparency = 1, Text = "Anonymous Mode", TextColor3 = self.Theme.TextSecondary, TextSize = 10, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = anf})
+	local ant = Create("TextButton", {Name = "AnonToggle", Size = UDim2.new(0, 40, 0, 20), Position = UDim2.new(1, -48, 0.5, -10), BackgroundColor3 = self.AnonymousMode and self.Theme.Primary or self.Theme.Border, BorderSizePixel = 0, Text = "", Parent = anf})
+	Create("UICorner", {CornerRadius = UDim.new(1, 0), Parent = ant})
+	local anc = Create("Frame", {Name = "Circle", Size = UDim2.new(0, 16, 0, 16), Position = self.AnonymousMode and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8), BackgroundColor3 = Color3.fromRGB(255, 255, 255), BorderSizePixel = 0, Parent = ant})
+	Create("UICorner", {CornerRadius = UDim.new(1, 0), Parent = anc})
+	ant.MouseButton1Click:Connect(function()
+		self.AnonymousMode = not self.AnonymousMode
+		game:GetService("TweenService"):Create(ant, TweenInfo.new(0.15), {BackgroundColor3 = self.AnonymousMode and self.Theme.Primary or self.Theme.Border}):Play()
+		game:GetService("TweenService"):Create(anc, TweenInfo.new(0.15), {Position = self.AnonymousMode and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)}):Play()
+		self:UpdateAnonymousMode()
+		self:Log(self.AnonymousMode and "Anonymous mode enabled" or "Anonymous mode disabled", "success")
+	end)
+	sb.MouseButton1Click:Connect(function()
+		self.SettingsOpen = not self.SettingsOpen
+		game:GetService("TweenService"):Create(sc, TweenInfo.new(0.2), {Size = self.SettingsOpen and UDim2.new(1, -20, 0, 172) or UDim2.new(1, -20, 0, 28)}):Play()
+		game:GetService("TweenService"):Create(ar, TweenInfo.new(0.2), {Rotation = self.SettingsOpen and 180 or 0}):Play()
+	end)
+	local ui = Create("Frame", {Name = "UserInfo", Size = UDim2.new(1, -20, 0, 50), Position = UDim2.new(0, 10, 0, 40), BackgroundColor3 = self.Theme.Content, BorderSizePixel = 0, Parent = up})
 	Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = ui})
 	self.AvatarImg = Create("ImageLabel", {Name = "Avatar", Size = UDim2.new(0, 36, 0, 36), Position = UDim2.new(0, 7, 0.5, -18), BackgroundColor3 = self.Theme.Border, BorderSizePixel = 0, Image = "rbxthumb://type=AvatarHeadShot&id=" .. game.Players.LocalPlayer.UserId .. "&w=150&h=150", Parent = ui})
 	Create("UICorner", {CornerRadius = UDim.new(1, 0), Parent = self.AvatarImg})
@@ -401,60 +467,7 @@ function OdinLib:UpdateAnonymousMode()
 end
 
 function OdinLib:CreateSettingsTab()
-	local st = self:AddTab({Name = "UI Settings", Icon = GetIcon("settings"), Subtext = "Configure interface"})
-	self:AddDivider(st, {Text = "KEYBIND"})
-	self:AddLabel(st, {Text = "Change the toggle key for the UI"})
-	local kb = Create("Frame", {Name = "KeybindFrame", Size = UDim2.new(1, 0, 0, 40), BackgroundColor3 = self.Theme.ElementBackground, BorderSizePixel = 0, Parent = self.ContentScroll, Visible = false})
-	Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = kb})
-	Create("TextLabel", {Size = UDim2.new(0.5, 0, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = "Toggle Key", TextColor3 = self.Theme.TextPrimary, TextSize = 12, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = kb})
-	self.KeybindButton = Create("TextButton", {Size = UDim2.new(0.45, 0, 0, 28), Position = UDim2.new(0.55, 0, 0.5, -14), BackgroundColor3 = self.Theme.Border, BorderSizePixel = 0, Text = self.Keybind.Name, TextColor3 = self.Theme.Primary, TextSize = 11, Font = Enum.Font.GothamBold, Parent = kb})
-	Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = self.KeybindButton})
-	table.insert(st.Elements, {Type = "Custom", Frame = kb})
-	self.KeybindButton.MouseButton1Click:Connect(function()
-		self.KeybindButton.Text = "..."
-		local cn; cn = game:GetService("UserInputService").InputBegan:Connect(function(i)
-			if i.UserInputType == Enum.UserInputType.Keyboard then
-				self.Keybind = i.KeyCode
-				self.KeybindButton.Text = i.KeyCode.Name
-				cn:Disconnect()
-			end
-		end)
-	end)
-	self:AddDivider(st, {Text = "LOADOUT MANAGER"})
-	self:AddLabel(st, {Text = "Save and load UI configurations"})
-	local lf = Create("Frame", {Name = "LoadoutFrame", Size = UDim2.new(1, 0, 0, 72), BackgroundColor3 = self.Theme.ElementBackground, BorderSizePixel = 0, Parent = self.ContentScroll, Visible = false})
-	Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = lf})
-	Create("TextLabel", {Size = UDim2.new(1, -20, 0, 16), Position = UDim2.new(0, 10, 0, 6), BackgroundTransparency = 1, Text = "Loadout Name", TextColor3 = self.Theme.TextSecondary, TextSize = 10, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = lf})
-	self.LoadoutInput = Create("TextBox", {Size = UDim2.new(1, -20, 0, 26), Position = UDim2.new(0, 10, 0, 24), BackgroundColor3 = self.Theme.Border, BorderSizePixel = 0, Text = self.LoadoutName, PlaceholderText = "Enter name", PlaceholderColor3 = self.Theme.TextDisabled, TextColor3 = self.Theme.TextPrimary, TextSize = 11, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = lf})
-	Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = self.LoadoutInput})
-	Create("UIPadding", {PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8), Parent = self.LoadoutInput})
-	local sav = Create("TextButton", {Size = UDim2.new(0.48, 0, 0, 20), Position = UDim2.new(0, 10, 1, -26), BackgroundColor3 = self.Theme.Success, BorderSizePixel = 0, Text = "Save Config", TextColor3 = self.Theme.Background, TextSize = 10, Font = Enum.Font.GothamBold, Parent = lf})
-	Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = sav})
-	local lod = Create("TextButton", {Size = UDim2.new(0.48, 0, 0, 20), Position = UDim2.new(0.52, 0, 1, -26), BackgroundColor3 = self.Theme.Primary, BorderSizePixel = 0, Text = "Load Config", TextColor3 = self.Theme.Background, TextSize = 10, Font = Enum.Font.GothamBold, Parent = lf})
-	Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = lod})
-	table.insert(st.Elements, {Type = "Custom", Frame = lf})
-	sav.MouseButton1Click:Connect(function()
-		local n = self.LoadoutInput.Text
-		if n and n ~= "" then
-			self.LoadoutName = n
-			self:SaveConfig()
-			self:Log("Saved: " .. n, "success")
-		end
-	end)
-	lod.MouseButton1Click:Connect(function()
-		local n = self.LoadoutInput.Text
-		if n and n ~= "" then
-			self.LoadoutName = n
-			self:LoadConfig()
-			self:Log("Loaded: " .. n, "success")
-		end
-	end)
-	self:AddDivider(st, {Text = "PRIVACY"})
-	self:AddToggle(st, {Name = "Anonymous Mode", Default = false, Callback = function(v)
-		self.AnonymousMode = v
-		self:UpdateAnonymousMode()
-		self:Log(v and "Anonymous mode enabled" or "Anonymous mode disabled", "success")
-	end})
+	return
 end
 
 function OdinLib:ToggleVisibility()
@@ -664,8 +677,8 @@ function OdinLib:AddSlider(t, cfg)
 	e.Value = e.Default
 	e.Frame = Create("Frame", {Name = "SliderElement", Size = UDim2.new(1, 0, 0, 52), BackgroundColor3 = self.Theme.ElementBackground, BorderSizePixel = 0, Parent = self.ContentScroll, Visible = false})
 	Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = e.Frame})
-	Create("TextLabel", {Name = "Label", Size = UDim2.new(1, -100, 0, 20), Position = UDim2.new(0, 10, 0, 6), BackgroundTransparency = 1, Text = e.Name, TextColor3 = self.Theme.TextPrimary, TextSize = 12, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = e.Frame})
-	e.ValueBox = Create("TextBox", {Name = "ValueBox", Size = UDim2.new(0, 60, 0, 24), Position = UDim2.new(1, -70, 0, 4), BackgroundColor3 = self.Theme.Border, BorderSizePixel = 0, Text = tostring(e.Value), TextColor3 = self.Theme.Primary, TextSize = 11, Font = Enum.Font.GothamBold, Parent = e.Frame})
+	Create("TextLabel", {Name = "Label", Size = UDim2.new(0.5, -5, 0, 20), Position = UDim2.new(0, 10, 0, 6), BackgroundTransparency = 1, Text = e.Name, TextColor3 = self.Theme.TextPrimary, TextSize = 12, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = e.Frame})
+	e.ValueBox = Create("TextBox", {Name = "ValueBox", Size = UDim2.new(0, 60, 0, 24), Position = UDim2.new(0.5, 0, 0, 4), BackgroundColor3 = self.Theme.Border, BorderSizePixel = 0, Text = tostring(e.Value), TextColor3 = self.Theme.Primary, TextSize = 11, Font = Enum.Font.GothamBold, Parent = e.Frame})
 	Create("UICorner", {CornerRadius = UDim.new(0, 3), Parent = e.ValueBox})
 	local sb = Create("Frame", {Name = "SliderBack", Size = UDim2.new(1, -20, 0, 4), Position = UDim2.new(0, 10, 0, 34), BackgroundColor3 = self.Theme.Border, BorderSizePixel = 0, Parent = e.Frame})
 	Create("UICorner", {CornerRadius = UDim.new(1, 0), Parent = sb})
