@@ -1,3 +1,5 @@
+-- made by @hydrox.developer on Discord | https://discord.com (Remakes or extra additives $5)
+
 if not game:IsLoaded() then
 	repeat task.wait() until game:IsLoaded()
 end
