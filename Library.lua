@@ -310,6 +310,12 @@ local LucideIcons = {
 	["zoom-out"] = "rbxassetid://10723476681",
 }
 
+local UIINTERFACESETTINGS = {
+	NoSettings = false
+}
+local UiSettings = UIINTERFACESETTINGS
+
+
 local function Create(c, p)
 	local o = Instance.new(c)
 	for k, v in pairs(p) do if k ~= "Parent" then o[k] = v end end
@@ -470,6 +476,7 @@ function OdinLib:UpdateAnonymousMode()
 end
 
 function OdinLib:CreateSettingsTab()
+	if UiSettings.NoSettings then return end
 	local st = self:AddTab({Name = "UI Settings", Icon = "settings", Subtext = "Configure interface"})
 	self:AddDivider(st, {Text = "KEYBIND"})
 	self:AddLabel(st, {Text = "Change the toggle key for the UI"})
