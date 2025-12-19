@@ -477,6 +477,7 @@ end
 
 function OdinLib:CreateSettingsTab()
 	if UiSettings.NoSettings then return end
+	task.wait(5)
 	local st = self:AddTab({Name = "UI Settings", Icon = "settings", Subtext = "Configure interface"})
 	self:AddDivider(st, {Text = "KEYBIND"})
 	self:AddLabel(st, {Text = "Change the toggle key for the UI"})
