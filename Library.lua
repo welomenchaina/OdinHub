@@ -178,6 +178,8 @@ function OdinLib:CreateSettingsTab()
 		self:UpdateAnonymousMode()
 		self:Log(v and "Anonymous mode enabled" or "Anonymous mode disabled", "success")
 	end})
+	
+	table.insert(self.Tabs, 1, table.remove(self.Tabs))
 end
 
 function OdinLib:ToggleVisibility()
@@ -204,7 +206,7 @@ function OdinLib:CreateConsole()
 	self.Console = Create("Frame", {Name = "Console", Size = UDim2.new(1, -210, 0, 90), Position = UDim2.new(0, 205, 1, -95), BackgroundColor3 = self.Theme.Sidebar, BorderSizePixel = 0, Parent = self.MainFrame})
 	Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = self.Console})
 	self.ConsoleScroll = Create("ScrollingFrame", {Name = "ConsoleScroll", Size = UDim2.new(1, -16, 1, -8), Position = UDim2.new(0, 8, 0, 4), BackgroundTransparency = 1, BorderSizePixel = 0, ScrollBarThickness = 3, ScrollBarImageColor3 = self.Theme.Primary, CanvasSize = UDim2.new(0, 0, 0, 0), Parent = self.Console})
-	local col = Create("UIListLayout", {SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 1), Parent = self.ConsoleScroll})
+	local col = Create("UIListLayout", {SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 3), Parent = self.ConsoleScroll})
 	col:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 		self.ConsoleScroll.CanvasSize = UDim2.new(0, 0, 0, col.AbsoluteContentSize.Y)
 		self.ConsoleScroll.CanvasPosition = Vector2.new(0, col.AbsoluteContentSize.Y)
@@ -438,13 +440,14 @@ function OdinLib:AddDropdown(t, cfg)
 	Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = db})
 	e.SelectedLabel = Create("TextLabel", {Name = "SelectedLabel", Size = UDim2.new(1, -26, 1, 0), Position = UDim2.new(0, 8, 0, 0), BackgroundTransparency = 1, Text = e.Value, TextColor3 = self.Theme.TextPrimary, TextSize = 11, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 2, Parent = db})
 	e.Arrow = Create("ImageLabel", {Name = "Arrow", Size = UDim2.new(0, 10, 0, 10), Position = UDim2.new(1, -18, 0.5, -5), BackgroundTransparency = 1, Image = GetIcon("chevron-down"), ImageColor3 = self.Theme.TextSecondary, Rotation = 0, ZIndex = 2, Parent = db})
-	e.DropdownContainer = Create("Frame", {Name = "DropdownContainer", Size = UDim2.new(0.55, -10, 0, 0), Position = UDim2.new(0.45, 0, 1, 4), BackgroundTransparency = 1, Visible = false, ClipsDescendants = false, ZIndex = 200, Parent = e.Frame})
-	e.OptionsFrame = Create("ScrollingFrame", {Name = "OptionsFrame", Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = self.Theme.ElementBackground, BorderSizePixel = 0, ClipsDescendants = true, ZIndex = 201, ScrollBarThickness = 3, ScrollBarImageColor3 = self.Theme.Primary, CanvasSize = UDim2.new(0, 0, 0, 0), Parent = e.DropdownContainer})
+	e.DropdownContainer = Create("Frame", {Name = "DropdownContainer", Size = UDim2.new(0.55, -10, 0, 0), Position = UDim2.new(0.45, 0, 1, 4), BackgroundTransparency = 1, Visible = false, ClipsDescendants = false, ZIndex = 999, Parent = e.Frame})
+	e.OptionsFrame = Create("ScrollingFrame", {Name = "OptionsFrame", Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = self.Theme.ElementBackground, BorderSizePixel = 0, ClipsDescendants = true, ZIndex = 1000, ScrollBarThickness = 3, ScrollBarImageColor3 = self.Theme.Primary, CanvasSize = UDim2.new(0, 0, 0, 0), Parent = e.DropdownContainer})
 	Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = e.OptionsFrame})
+	Create("UIStroke", {Color = self.Theme.Border, Thickness = 1, Parent = e.OptionsFrame})
 	local ol = Create("UIListLayout", {SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 2), Parent = e.OptionsFrame})
 	Create("UIPadding", {PaddingTop = UDim.new(0, 4), PaddingBottom = UDim.new(0, 4), PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4), Parent = e.OptionsFrame})
 	for _, o in pairs(e.Options) do
-		local ob = Create("TextButton", {Name = o, Size = UDim2.new(1, -8, 0, 24), BackgroundColor3 = self.Theme.Content, BackgroundTransparency = 0.5, BorderSizePixel = 0, Text = o, TextColor3 = self.Theme.TextPrimary, TextSize = 11, Font = Enum.Font.Gotham, ZIndex = 202, Parent = e.OptionsFrame})
+		local ob = Create("TextButton", {Name = o, Size = UDim2.new(1, -8, 0, 24), BackgroundColor3 = self.Theme.Content, BackgroundTransparency = 0.5, BorderSizePixel = 0, Text = o, TextColor3 = self.Theme.TextPrimary, TextSize = 11, Font = Enum.Font.Gotham, ZIndex = 1001, Parent = e.OptionsFrame})
 		Create("UICorner", {CornerRadius = UDim.new(0, 3), Parent = ob})
 		ob.MouseButton1Click:Connect(function()
 			e.Value = o
@@ -531,8 +534,26 @@ end
 
 function OdinLib:Log(m, lt)
 	local c = self.Theme.TextSecondary
-	if lt == "success" then c = self.Theme.Success elseif lt == "warning" then c = self.Theme.Warning elseif lt == "error" then c = self.Theme.Error end
-	Create("TextLabel", {Size = UDim2.new(1, 0, 0, 14), BackgroundTransparency = 1, Text = os.date("[%H:%M:%S]") .. " " .. m, TextColor3 = c, TextSize = 10, Font = Enum.Font.Code, TextXAlignment = Enum.TextXAlignment.Left, Parent = self.ConsoleScroll})
+	local prefix = "[INFO]"
+	if lt == "success" then 
+		c = self.Theme.Success 
+		prefix = "[✓]"
+	elseif lt == "warning" then 
+		c = self.Theme.Warning 
+		prefix = "[⚠]"
+	elseif lt == "error" then 
+		c = self.Theme.Error 
+		prefix = "[✗]"
+	end
+	
+	local logFrame = Create("Frame", {Size = UDim2.new(1, -8, 0, 18), BackgroundColor3 = self.Theme.Content, BorderSizePixel = 0, Parent = self.ConsoleScroll})
+	Create("UICorner", {CornerRadius = UDim.new(0, 3), Parent = logFrame})
+	
+	local timeLabel = Create("TextLabel", {Size = UDim2.new(0, 65, 1, 0), Position = UDim2.new(0, 4, 0, 0), BackgroundTransparency = 1, Text = os.date("[%H:%M:%S]"), TextColor3 = self.Theme.TextDisabled, TextSize = 9, Font = Enum.Font.Code, TextXAlignment = Enum.TextXAlignment.Left, Parent = logFrame})
+	
+	local prefixLabel = Create("TextLabel", {Size = UDim2.new(0, 40, 1, 0), Position = UDim2.new(0, 70, 0, 0), BackgroundTransparency = 1, Text = prefix, TextColor3 = c, TextSize = 10, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = logFrame})
+	
+	local msgLabel = Create("TextLabel", {Size = UDim2.new(1, -115, 1, 0), Position = UDim2.new(0, 110, 0, 0), BackgroundTransparency = 1, Text = m, TextColor3 = self.Theme.TextPrimary, TextSize = 10, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd, Parent = logFrame})
 end
 
 return OdinLib
