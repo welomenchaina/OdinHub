@@ -167,6 +167,9 @@ function WimplyUI:CreateWindow(config)
     Gui.Name = "WimplyUI_" .. math.random(100000, 999999)
     Gui.ResetOnSpawn = false
     Gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    if Gui.IgnoreGuiInset == false then
+    Gui.IgnoreGuiInset = true
+    end
     pcall(function() Gui.Parent = game:GetService("CoreGui") end)
     if not Gui.Parent then Gui.Parent = Plr:WaitForChild("PlayerGui") end
     window.Gui = Gui
